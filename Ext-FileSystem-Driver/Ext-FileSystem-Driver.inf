@@ -1,0 +1,62 @@
+;
+; Ext-FileSystem-Driver.inf
+;
+
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = System ; TODO: specify appropriate Class
+ClassGuid   = {4d36e97d-e325-11ce-bfc1-08002be10318} ; TODO: specify appropriate ClassGuid
+Provider    = %ManufacturerName%
+CatalogFile = Ext-FileSystem-Driver.cat
+DriverVer   = ; TODO: set DriverVer in stampinf property pages
+PnpLockdown = 1
+
+[DestinationDirs]
+DefaultDestDir = 13
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+Ext-FileSystem-Driver.sys = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName% = Standard,NT$ARCH$.10.0...16299 ; %13% support introduced in build 16299
+
+[Standard.NT$ARCH$.10.0...16299]
+%Ext-FileSystem-Driver.DeviceDesc% = Ext-FileSystem-Driver_Device, Root\Ext-FileSystem-Driver ; TODO: edit hw-id
+
+[Ext-FileSystem-Driver_Device.NT]
+CopyFiles = File_Copy
+
+[File_Copy]
+Ext-FileSystem-Driver.sys
+
+;-------------- Service installation
+[Ext-FileSystem-Driver_Device.NT.Services]
+AddService = Ext-FileSystem-Driver,%SPSVCINST_ASSOCSERVICE%, Ext-FileSystem-Driver_Service_Inst
+
+; -------------- Ext-FileSystem-Driver driver install sections
+[Ext-FileSystem-Driver_Service_Inst]
+DisplayName    = %Ext-FileSystem-Driver.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %13%\Ext-FileSystem-Driver.sys
+
+[Ext-FileSystem-Driver_Device.NT.Wdf]
+KmdfService = Ext-FileSystem-Driver, Ext-FileSystem-Driver_wdfsect
+
+[Ext-FileSystem-Driver_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE = 0x00000002
+ManufacturerName = "<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+DiskName = "Ext-FileSystem-Driver Installation Disk"
+Ext-FileSystem-Driver.DeviceDesc = "Ext-FileSystem-Driver Device"
+Ext-FileSystem-Driver.SVCDESC = "Ext-FileSystem-Driver Service"
